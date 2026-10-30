@@ -14,12 +14,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<Post>(entity =>
         {
             entity.HasKey(p => p.Id);
-            
+
             entity.Property(p => p.Id)
                 .ValueGeneratedOnAdd();
-            
-            entity.ToTable(b => b.HasCheckConstraint("CK_Post_Type", "\"type\" IN ('project', 'thought')"));
-            
+
+            entity.ToTable(b => b.HasCheckConstraint(
+                "CK_Post_Type",
+                "\"type\" IN ('project', 'thought')"
+                ));
+
             entity.OwnsMany(p => p.Tags, b => b.ToJson());
         });
     }
