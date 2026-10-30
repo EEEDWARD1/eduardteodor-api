@@ -1,7 +1,7 @@
 version: 2
 updates:
-  - package-ecosystem: "dotnet-sdk"
-    directory: "/"
+  - package-ecosystem: "nuget"
+    directory: "/EduardTeodor"
     schedule:
       interval: "weekly"
       day: "sunday"
