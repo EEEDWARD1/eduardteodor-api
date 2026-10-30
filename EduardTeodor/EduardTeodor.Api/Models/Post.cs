@@ -2,7 +2,7 @@ namespace EduardTeodor.Api.Models;
 
 public class Post
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.CreateVersion7();
     public required string Type { get; set; } = "thought";
     public required string Slug { get; set; }
     public required string Title { get; set; }
