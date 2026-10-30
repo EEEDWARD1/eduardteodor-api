@@ -1,0 +1,7 @@
+﻿services:
+  eduardteodor.api:
+    image: eduardteodor.api
+    build:
+      context: .
+      dockerfile: EduardTeodor.Api/Dockerfile
+

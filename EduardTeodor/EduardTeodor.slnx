@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="compose.yaml" />
+  </Folder>
+  <Project Path="EduardTeodor.Api/EduardTeodor.Api.csproj" />
+  <Project Path="EduardTeodor.Test/EduardTeodor.Test.csproj" />
+</Solution>
