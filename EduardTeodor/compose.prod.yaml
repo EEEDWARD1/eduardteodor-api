@@ -1,0 +1,55 @@
+name: eduardteodor
+
+services:
+  api:
+    image: eduardteodor.api:prod
+    build:
+      context: .
+      dockerfile: EduardTeodor.Api/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: >-
+        Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # One-off: docker compose -f compose.prod.yaml run --rm migrate
+  # Works on a copy of the source so root-owned bin/obj never land in the checkout.
+  migrate:
+    profiles: ["tools"]
+    image: mcr.microsoft.com/dotnet/sdk:10.0
+    volumes:
+      - .:/src:ro
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: >-
+        Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+    command:
+      - sh
+      - -c
+      - cp -r /src /work && cd /work && dotnet tool restore && dotnet ef database update --project EduardTeodor.Api
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

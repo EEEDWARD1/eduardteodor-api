@@ -5,3 +5,13 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+  - package-ecosystem: "docker"
+    directory: "/EduardTeodor/EduardTeodor.Api"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
