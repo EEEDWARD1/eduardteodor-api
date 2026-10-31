@@ -1,13 +1,22 @@
 name: build and test
 on:
   push:
+    branches: [ main ]
+    paths:
+      - 'EduardTeodor/**'
+      - '.github/workflows/**'
   pull_request:
     branches: [ main ]
     paths:
-      - '**.cs'
-      - '**.csproj'
-      - '**.slnx'
+      - 'EduardTeodor/**'
       - '.github/workflows/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   DOTNET_VERSION: '10.0.x'
@@ -26,6 +35,8 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
+        cache: true
+        cache-dependency-path: EduardTeodor/**/*.csproj
 
     - name: Install dependencies
       run: dotnet restore
@@ -35,3 +46,38 @@ jobs:
 
     - name: Test
       run: dotnet test --no-restore --verbosity normal
+
+  deploy:
+    name: deploy
+    needs: build-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: [ self-hosted, linux ]
+    environment: production
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    env:
+      POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+      POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+    defaults:
+      run:
+        working-directory: EduardTeodor
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build image
+      run: docker compose -f compose.prod.yaml build api
+
+    - name: Start database
+      run: docker compose -f compose.prod.yaml up -d --wait db
+
+    - name: Apply migrations
+      run: docker compose -f compose.prod.yaml run --rm migrate
+
+    - name: Start api
+      run: docker compose -f compose.prod.yaml up -d api
+
+    - name: Prune old images
+      run: docker image prune -f
