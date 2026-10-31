@@ -1,4 +1,5 @@
 using EduardTeodor.Api.Data;
+using EduardTeodor.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using EFCore.NamingConventions;
@@ -8,7 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddDbContextPool<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseNpgsql(
+            builder.Configuration.GetConnectionString("DefaultConnection"),
+            npgsql => npgsql.MapEnum<PostType>("post_type"))
         .UseSnakeCaseNamingConvention());
 
 var app = builder.Build();
