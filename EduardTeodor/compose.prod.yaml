@@ -57,7 +57,7 @@ services:
     command:
       - sh
       - -c
-      - cp -r /src /work && cd /work && dotnet tool restore && dotnet ef database update --project EduardTeodor.Api
+      - cp -r /src /work && cd /work && dotnet tool restore && dotnet restore EduardTeodor.Api/EduardTeodor.Api.csproj && dotnet ef database update --project EduardTeodor.Api
     depends_on:
       db:
         condition: service_healthy
