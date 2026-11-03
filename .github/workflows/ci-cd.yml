@@ -30,7 +30,7 @@ jobs:
         working-directory: EduardTeodor
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: SETUP .NET Core
       uses: actions/setup-dotnet@v4
       with:
@@ -65,7 +65,7 @@ jobs:
         working-directory: EduardTeodor
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     - name: Build image
       run: docker compose -f compose.prod.yaml build api
