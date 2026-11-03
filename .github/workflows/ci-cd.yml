@@ -60,6 +60,7 @@ jobs:
       POSTGRES_DB: ${{ vars.POSTGRES_DB }}
       POSTGRES_USER: ${{ vars.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      CLOUDFLARE_TUNNEL_TOKEN: ${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }}
     defaults:
       run:
         working-directory: EduardTeodor
@@ -76,8 +77,8 @@ jobs:
     - name: Apply migrations
       run: docker compose -f compose.prod.yaml run --rm migrate
 
-    - name: Start api
-      run: docker compose -f compose.prod.yaml up -d api
+    - name: Start api and Cloudflare Tunnel
+      run: docker compose -f compose.prod.yaml up -d api cloudflared
 
     - name: Prune old images
       run: docker image prune -f
