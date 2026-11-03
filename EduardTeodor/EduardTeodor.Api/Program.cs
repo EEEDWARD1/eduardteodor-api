@@ -3,11 +3,14 @@ using EduardTeodor.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using EFCore.NamingConventions;
+using EduardTeodor.Api.Endpoints;
+using EduardTeodor.Api.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddScoped<PostService>();
 builder.Services.AddDbContextPool<AppDbContext>(options =>
     options.UseNpgsql(
             builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -23,8 +26,6 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-app.UseHttpsRedirection();
-
-
-
+var v1 = app.MapGroup("/v1");
+v1.MapPostEndpoints();
 app.Run();
