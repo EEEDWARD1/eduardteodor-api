@@ -1,17 +1,13 @@
 version: 2
 updates:
-  - package-ecosystem: "nuget"
-    directory: "/EduardTeodor"
-    schedule:
-      interval: "weekly"
-      day: "sunday"
-  - package-ecosystem: "github-actions"
+  - package-ecosystem: "dotnet-sdk"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "sunday"
-  - package-ecosystem: "docker"
-    directory: "/EduardTeodor/EduardTeodor.Api"
+
+  - package-ecosystem:  "nuget"
+    directory: "/"
     schedule:
       interval: "weekly"
-      day: "sunday"
+      day: "sunday
