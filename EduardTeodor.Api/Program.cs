@@ -12,6 +12,8 @@ var connectionString = builder.Configuration.GetConnectionString("Database")
 builder.Services.AddNpgsqlDataSource(connectionString);
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<IAdminPostService, AdminPostService>();
+builder.Services.AddScoped<IAdminPostRepository, AdminPostRepository>();
 
 var app = builder.Build();
 
@@ -23,5 +25,6 @@ if (app.Environment.IsDevelopment())
 
 
 app.MapPostEndpoints();
+app.MapAdminPostEndpoints();
 
 app.Run();
