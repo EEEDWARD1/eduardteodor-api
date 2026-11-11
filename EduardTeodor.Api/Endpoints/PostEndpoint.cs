@@ -1,3 +1,4 @@
+using EduardTeodor.Api.DTOs.Posts;
 using EduardTeodor.Api.Services;
 
 namespace EduardTeodor.Api.Endpoints;
@@ -12,9 +13,11 @@ public static class PostEndpoints
         group.MapGet("/{slug}", GetPublishedBySlugAsync);
     }
 
-    private static async Task<IResult> GetAllPublished(IPostService postService)
+    private static async Task<IResult> GetAllPublished(
+        IPostService postService, 
+        [AsParameters] PostFilter parameters)
     {
-        var posts = await postService.GetAllPublishedAsync();
+        var posts = await postService.GetAllPublishedAsync(parameters);
 
         return Results.Ok(posts);
     }
