@@ -4,6 +4,6 @@ namespace EduardTeodor.Api.Services;
 
 public interface IPostService
 {
-    Task<IEnumerable<PublicPostResponse>> GetAllPublishedAsync();
+    Task<IEnumerable<PublicPostResponse>> GetAllPublishedAsync(PostFilter parameters);
     Task<PublicPostResponse?> GetPublishedBySlugAsync(string slug);
 }
