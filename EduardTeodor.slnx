@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="EduardTeodor.Api/EduardTeodor.Api.csproj" />
+  <Project Path="EduardTeodor.DbMigrator/EduardTeodor.DbMigrator.csproj" />
+</Solution>
