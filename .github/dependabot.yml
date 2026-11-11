@@ -10,4 +10,13 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-      day: "sunday
+      day: "sunday"
+
+  - package-ecosystem: "docker-compose"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      ignore:
+        - dependency-name: "postgres"
+        - update-types: ["version-update:semver-major"]
