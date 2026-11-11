@@ -17,6 +17,14 @@ public static class PostEndpoints
         IPostService postService, 
         [AsParameters] PostFilter parameters)
     {
+        if (parameters.PostType is < 1 or > 3)
+        {
+            return Results.ValidationProblem(new Dictionary<string, string[]>
+            {
+                [nameof(PostFilter.PostType)] = ["PostType must be between 1 and 3."]
+            });
+        }
+
         var posts = await postService.GetAllPublishedAsync(parameters);
 
         return Results.Ok(posts);

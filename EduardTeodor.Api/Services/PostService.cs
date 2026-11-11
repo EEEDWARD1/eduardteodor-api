@@ -7,8 +7,6 @@ public class PostService(IPostRepository postRepository) : IPostService
 {
     public async Task<IEnumerable<PublicPostResponse>> GetAllPublishedAsync(PostFilter parameters)
     {
-        if (parameters.PostType is < 1 or > 3) throw new ArgumentException("Invalid post type.");
-
         var posts = await postRepository.GetAllPublishedAsync(parameters);
 
         return posts.Select(post => new PublicPostResponse(

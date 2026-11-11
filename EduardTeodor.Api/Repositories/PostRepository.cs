@@ -25,11 +25,11 @@ public class PostRepository(NpgsqlDataSource dataSource) : IPostRepository
             p.created_at AS CreatedAt,
             p.updated_at AS UpdatedAt,
             ARRAY(
-                SELECT t.tag
+                SELECT t.tag_name
                 FROM public.post_tags pt
                 JOIN public.tags t ON t.id = pt.tag_id
                 WHERE pt.post_id = p.id
-                ORDER BY t.tag
+                ORDER BY t.tag_name
             ) AS TagNames
         FROM public.posts p
         WHERE p.published = true
@@ -58,8 +58,8 @@ public class PostRepository(NpgsqlDataSource dataSource) : IPostRepository
                 p.slug,
                 p.title,
                 p.post_type AS PostType,
-                COALESCE(p.summary, '') AS Summary,
-                COALESCE(p.description, '') AS Description,
+                p.summary,
+                p.description,
                 p.published,
                 p.starred,
                 p.created_at AS CreatedAt,
