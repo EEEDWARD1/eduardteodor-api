@@ -1,10 +1,17 @@
 using EduardTeodor.Api.DTOs.Posts;
+using EduardTeodor.Api.Models;
 using EduardTeodor.Api.Repositories;
 
 namespace EduardTeodor.Api.Services;
 
 public class AdminPostService(IAdminPostRepository adminPostRepository) : IAdminPostService
 {
+    public Task<Post?> CreatePostAsync(CreatePostRequest request)
+        => adminPostRepository.CreatePostAsync(request);
+
+    public Task<bool> DeletePostAsync(string slug)
+        => adminPostRepository.DeletePostAsync(slug);
+
     public async Task<IEnumerable<PublicPostResponse>> GetAllPostsAsync(PostFilter filter)
     {
         var posts = await adminPostRepository.GetAllPostsAsync(filter);
