@@ -7,3 +7,8 @@ This is part of a bigger collection of prepositories that build my personal ecos
 - [eduardteodor-cms](https://github.com/EEEDWARD1/eduardteodor-cms)
 - [eduardteodor-db](https://github.com/EEEDWARD1/eduardteodor-db)
 
+## Local Running
+For local shell sessions:
+```shell
+export ConnectionStrings__Database='Host=localhost;Port=5432;Database=your-database;Username=local;Password=your-local-password'
+```
