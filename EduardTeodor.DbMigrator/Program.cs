@@ -9,3 +9,5 @@ await connection.OpenAsync();
 var runner = new MigrationRunner(connection, Path.Combine(AppContext.BaseDirectory, "Migrations"));
 
 await runner.RunAsync();
+
+return 0;
