@@ -1,0 +1,72 @@
+name: CI/CD
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  DOTNET_VERSION: '10.0.x'
+
+jobs:
+  build-and-test:
+    name: build-and-test
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore EduardTeodor.slnx
+
+      - name: Build
+        run: dotnet build EduardTeodor.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test EduardTeodor.slnx --configuration Release --no-build --no-restore --verbosity normal
+
+  deploy:
+    name: deploy
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, linux]
+    environment: production
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    env:
+      POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+      POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      CLOUDFLARE_TUNNEL_TOKEN: ${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }}
+      ConnectionStrings__Database: >-
+        Host=database;Port=5432;Database=${{ vars.POSTGRES_DB }};Username=${{ vars.POSTGRES_USER }};Password=${{ secrets.POSTGRES_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Validate production configuration
+        run: docker compose -f compose.prod.yml config --quiet
+
+      - name: Build images
+        run: docker compose -f compose.prod.yml build api migrator
+
+      - name: Start database
+        run: docker compose -f compose.prod.yml up -d --wait database
+
+      - name: Apply migrations
+        run: docker compose -f compose.prod.yml run --rm migrator
+
+      - name: Start API and Cloudflare Tunnel
+        run: docker compose -f compose.prod.yml up -d --no-deps api cloudflared

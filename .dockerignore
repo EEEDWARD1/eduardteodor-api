@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+.git/
+.agents/
+.codex/
+.aws/
+.env
+.env.*
+**/*.user
+**/*.suo
