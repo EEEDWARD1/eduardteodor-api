@@ -1,15 +1,10 @@
 name: CI/CD
+
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'EduardTeodor/**'
-      - '.github/workflows/**'
   pull_request:
-    branches: [ main ]
-    paths:
-      - 'EduardTeodor/**'
-      - '.github/workflows/**'
+    branches: [main]
+  push:
+    branches: [main]
 
 permissions:
   contents: read
@@ -24,34 +19,29 @@ env:
 jobs:
   build-and-test:
     name: build-and-test
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: EduardTeodor
-
     steps:
-    - uses: actions/checkout@v7
-    - name: SETUP .NET Core
-      uses: actions/setup-dotnet@v6
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-        cache: true
-        cache-dependency-path: EduardTeodor/**/*.csproj
+      - uses: actions/checkout@v7
 
-    - name: Install dependencies
-      run: dotnet restore
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Build 
-      run: dotnet build --configuration Release --no-restore
+      - name: Restore dependencies
+        run: dotnet restore EduardTeodor.slnx
 
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      - name: Build
+        run: dotnet build EduardTeodor.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test EduardTeodor.slnx --configuration Release --no-build --no-restore --verbosity normal
 
   deploy:
     name: deploy
-    needs: build-and-test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: [ self-hosted, linux ]
+    runs-on: [self-hosted, linux]
     environment: production
     concurrency:
       group: deploy-production
@@ -61,24 +51,22 @@ jobs:
       POSTGRES_USER: ${{ vars.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       CLOUDFLARE_TUNNEL_TOKEN: ${{ secrets.CLOUDFLARE_TUNNEL_TOKEN }}
-    defaults:
-      run:
-        working-directory: EduardTeodor
-
+      ConnectionStrings__Database: >-
+        Host=database;Port=5432;Database=${{ vars.POSTGRES_DB }};Username=${{ vars.POSTGRES_USER }};Password=${{ secrets.POSTGRES_PASSWORD }}
     steps:
-    - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
 
-    - name: Build image
-      run: docker compose -f compose.prod.yaml build api
+      - name: Validate production configuration
+        run: docker compose -f compose.prod.yml config --quiet
 
-    - name: Start database
-      run: docker compose -f compose.prod.yaml up -d --wait db
+      - name: Build images
+        run: docker compose -f compose.prod.yml build api migrator
 
-    - name: Apply migrations
-      run: docker compose -f compose.prod.yaml run --rm migrate
+      - name: Start database
+        run: docker compose -f compose.prod.yml up -d --wait database
 
-    - name: Start api and Cloudflare Tunnel
-      run: docker compose -f compose.prod.yaml up -d api cloudflared
+      - name: Apply migrations
+        run: docker compose -f compose.prod.yml run --rm migrator
 
-    - name: Prune old images
-      run: docker image prune -f
+      - name: Start API and Cloudflare Tunnel
+        run: docker compose -f compose.prod.yml up -d --no-deps api cloudflared

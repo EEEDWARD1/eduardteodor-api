@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="EduardTeodor.Application/EduardTeodor.Application.csproj" />
+  <Project Path="EduardTeodor.DbMigrator/EduardTeodor.DbMigrator.csproj" />
+  <Project Path="EduardTeodor.Domain/EduardTeodor.Domain.csproj" />
+  <Project Path="EduardTeodor.Infrastructure/EduardTeodor.Infrastructure.csproj" />
+  <Project Path="EduardTeodor.Presentation/EduardTeodor.Presentation.csproj" />
+  <Project Path="EduardTeodor.Test/EduardTeodor.Test.csproj" />
+</Solution>
