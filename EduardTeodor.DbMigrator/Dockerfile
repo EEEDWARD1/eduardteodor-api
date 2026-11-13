@@ -10,7 +10,7 @@ COPY EduardTeodor.DbMigrator/Migrations/ EduardTeodor.DbMigrator/Migrations/
 RUN dotnet publish EduardTeodor.DbMigrator/EduardTeodor.DbMigrator.csproj \
     --configuration Release --no-restore --output /app/publish /p:UseAppHost=false
 
-FROM mcr.microsoft.com/dotnet/runtime:10.0 AS final
+FROM mcr.microsoft.com/dotnet/runtime:11.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish/ ./
 USER $APP_UID
