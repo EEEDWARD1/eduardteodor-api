@@ -1,6 +1,6 @@
 services:
   database:
-    image: postgres:18.7-alpine3.24
+    image: postgres:19.0-alpine3.24
     environment:
       POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB in .env}
       POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env}
